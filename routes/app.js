@@ -1,5 +1,6 @@
-var express = require('express');
-var app = express();
+import express from 'express';
+
+const app = express();
 
 // Rutas
 app.get('/', (req, res, next) => {
@@ -9,4 +10,4 @@ app.get('/', (req, res, next) => {
     });
 });
 
-module.exports = app;
+export default app;

@@ -1,18 +1,16 @@
-var express = require('express');
-var bcrypt = require('bcryptjs');
-var jwt = require('jsonwebtoken');
+import express from 'express';
+import { compareSync } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
+import { SEED } from '../config/config';
+import Usuario from '../models/usuario';
 
-var SEED = require('../config/config').SEED;
-
-var app = express();
-
-var Usuario = require('../models/usuario');
+const app = express();
 
 app.post('/', (req, res) => {
 
-    var body = req.body;
-    
-    Usuario.findOne({email: body.email}, (err, usuarioDB) => {
+    const body = req.body;
+
+    Usuario.findOne({ email: body.email }, (err, usuarioDB) => {
 
         if (err) {
             return res.status(500).json({
@@ -32,7 +30,7 @@ app.post('/', (req, res) => {
         }
 
         // Verifica la contraseña ingresada
-        if (!bcrypt.compareSync(body.password, usuarioDB.password)) {
+        if (!compareSync(body.password, usuarioDB.password)) {
             return res.status(400).json({
                 ok: false,
                 mensaje: 'Credenciales incorrectas - password',
@@ -42,7 +40,8 @@ app.post('/', (req, res) => {
 
         // Crear un token
         usuarioDB.password = ':)';
-        var token = jwt.sign({usuario: usuarioDB}, SEED, {expiresIn: 14400}); // 4 horas
+        const token = sign({usuario: usuarioDB}, SEED, {expiresIn: 14400}); // 4 horas
+
 
 
         res.status(200).json({
@@ -56,4 +55,4 @@ app.post('/', (req, res) => {
 
 });
 
-module.exports = app;
+export default app;
